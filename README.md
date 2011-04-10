@@ -14,7 +14,7 @@
 
 * Initial build
 
-### TO ###
+### TODO ###
 
 * The source files still need a little tending to as their not the prettiest to look at.
 * Special properties should not be static instances. This is the _wrong_ approach.
