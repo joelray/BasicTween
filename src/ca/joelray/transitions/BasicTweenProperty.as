@@ -1,5 +1,5 @@
 /**
- * BasicTweenProperties by Joel Ray. 2010
+ * BasicTweenProperty by Joel Ray. 2010
  *
  * Copyright (c) 2010 Joel Ray
  * 
@@ -25,7 +25,7 @@
 package ca.joelray.transitions {
 	
 	/**
-	 * The <code>BasicTweenProperties</code> Class
+	 * The <code>BasicTweenProperty</code> Class
 	 * 
 	 * @copyright 		2010 Joel Ray
 	 * @author			Joel Ray
@@ -34,22 +34,29 @@ package ca.joelray.transitions {
 	 * @playerversion 	Flash 10.0.0
 	 *
 	 */
-	public class BasicTweenProperties {
+	public class BasicTweenProperty {
 		
 		public var id                       : String;
-		public var isSpecialProperty        : Boolean;
+		
 		public var valueStart               : *;           // Starting value
 		public var valueComplete            : *;           // Final Value
 		public var valueChange              : *;           // Change needed in value (cache)
+		
+		public var isSpecialProperty        : Boolean;
+		public var specialProperty          : *;
 		
 		
 		// ===========================================================================================================================
 		// CONSTRUCTOR ---------------------------------------------------------------------------------------------------------------
 		
-		public function BasicTweenProperties( $id:String, $valueComplete:*, $isSpecialProperty:Boolean = false ) {
+		public function BasicTweenProperty( $id:String, $valueComplete:*, $specialProperty:* = null ) {
 			id = $id;
 			valueComplete = $valueComplete;
-			isSpecialProperty = $isSpecialProperty;
+			
+			if(Boolean($specialProperty)) {
+				isSpecialProperty = true;
+				specialProperty = $specialProperty;
+			}
 		};
 		
 	};

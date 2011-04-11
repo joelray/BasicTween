@@ -54,9 +54,9 @@ package ca.joelray.transitions {
 		private static var _specialPropertiesList       : Object;                           // List of special property instances
 
 		private var _target                             : Object;                           // Display object being tweened
-		private var _properties                         : Vector.<BasicTweenProperties>;    // Property instance
+		private var _properties                         : Vector.<BasicTweenProperty>;      // Property instance
 		private var _numProps                           : int;                              // Number of properties for a tween 
-		private var _tProperty                          : BasicTweenProperties;             // Property being checked
+		private var _tProperty                          : BasicTweenProperty;               // Property being checked
 		private var _pv                                 : Number;                           // Property value
 		
 		private var _t                                  : Number;                           // Current time (0-1)
@@ -69,9 +69,9 @@ package ca.joelray.transitions {
 		private var _started                            : Boolean;                          // Acknowledges the tween has begun
 		private var _ease                               : Function = Linear.easeNone;       // Tween ease - defaults to Linear.none
                                                 		
-		private var _onStart                            : BasicTweenSignal;              // Signal dispatched when a tween has started
-		private var _onUpdate                           : BasicTweenSignal;              // Signal dispatched when a tween has updated
-		private var _onComplete                         : BasicTweenSignal;              // Signal dispatched when a tween has completed  
+		private var _onStart                            : BasicTweenSignal;                 // Signal dispatched when a tween has started
+		private var _onUpdate                           : BasicTweenSignal;                 // Signal dispatched when a tween has updated
+		private var _onComplete                         : BasicTweenSignal;                 // Signal dispatched when a tween has completed  
                                                 		
 		private var _paused                             : Boolean;                          // Pauses all tweens
 		private var _useFrames                          : Boolean;                          // Uses frames instead of milliseconds
@@ -92,7 +92,7 @@ package ca.joelray.transitions {
 			if(!_init) _initialize();
 			
 			_target = $target;
-			_properties = new Vector.<BasicTweenProperties>();
+			_properties = new Vector.<BasicTweenProperty>();
 			
 			var i:String, k:String, sp:String, b:Boolean, issp:Boolean;
 			for( i in $vars ) {
@@ -103,8 +103,8 @@ package ca.joelray.transitions {
 
 				if(!Boolean(b)) {
 					// If property is special, mark it as so. Otherwise, push it as normal. 
-					if(Boolean(issp)) _properties.push(new BasicTweenProperties( i, $vars[ i ], true));
-					else _properties.push(new BasicTweenProperties( i, $vars[ i ]));
+					if(Boolean(issp)) _properties.push( new BasicTweenProperty( i, $vars[ i ], new _specialPropertiesList[i]() ));
+					else _properties.push( new BasicTweenProperty( i, $vars[ i ]));
 				}
 			}
 
@@ -162,9 +162,8 @@ package ca.joelray.transitions {
 					_onStart.dispatch();
 					
 					for( var i:int=0; i<_properties.length; ++i ) {
-						_tProperty = BasicTweenProperties( _properties[ i ]);
-						
-						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].init(_target, _tProperty.valueComplete);
+						_tProperty = BasicTweenProperty( _properties[ i ]);
+						if(_tProperty.isSpecialProperty) _tProperty.specialProperty.init(_target, _tProperty.valueComplete);
 						else _pv = _target[ _tProperty.id ];
 
 						_tProperty.valueStart = isNaN( _pv ) ? _tProperty.valueComplete : _pv;
@@ -177,9 +176,8 @@ package ca.joelray.transitions {
 				if( _cTime >= _timeComplete ) {
 					// Tweening time has completed, set to final value
 					for( var ii:int=0; ii<_properties.length; ++ii ) {
-						_tProperty = BasicTweenProperties( _properties[ ii ]);
-						
-						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].update(1);
+						_tProperty = BasicTweenProperty( _properties[ ii ]);
+						if(_tProperty.isSpecialProperty) _tProperty.specialProperty.update(1);
 						else _target[ _tProperty.id ] = _tProperty.valueComplete;
 					}
 
@@ -192,9 +190,8 @@ package ca.joelray.transitions {
 					// Tweening must continue
 					_t = _ease(( _cTime - _timeStart ), 0, 1, _timeDuration );
 					for( var iii:int=0; iii<_numProps; ++iii ) {
-						_tProperty = BasicTweenProperties( _properties[ iii ]);
-						
-						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].update(_t);
+						_tProperty = BasicTweenProperty( _properties[ iii ]);
+						if(_tProperty.isSpecialProperty) _tProperty.specialProperty.update(_t);
 						else _target[ _tProperty.id ] = _tProperty.valueStart + _t * _tProperty.valueChange;
 					}
 
