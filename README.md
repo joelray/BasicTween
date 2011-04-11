@@ -8,6 +8,13 @@ Created by [Joel Ray](https://github.com/joelray).
 
 ### Change Log ###
 
+2011-04-11 - **r5**
+
+* Fixed a bug that wouldn't allow more than one instance of a special property.
+* Renamed _BasicTweenProperties_ to _BasicTweenProperty_ as it only contains details of a single prop.
+* Optimizations ++.
+
+
 2011-04-10 - **r4**
 
 * Added some internal comments.
@@ -33,4 +40,3 @@ Created by [Joel Ray](https://github.com/joelray).
 ### TODO ###
 
 * The source files still need a little tending to as their not the prettiest to look at.
-* BasicTween to reference all non-static methods from TweenObject rather than mixing method types in BasicTween.
