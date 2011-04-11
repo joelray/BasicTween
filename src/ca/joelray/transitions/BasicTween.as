@@ -117,23 +117,22 @@ package ca.joelray.transitions {
 				}
 			}
 
-			_numProps	 =	_properties.length;
-			_timeCreated =	currentTime;
-			_timeStart	 =	_timeCreated;
+			_numProps = _properties.length;
+			_timeCreated = currentTime;
+			_timeStart = _timeCreated;
 
 			// Parameters
-			time		 =	0;
-			delay		 =	0;
+			time = 0;
+			delay = 0;
 			
 			// Signals
-			_onStart	 =	new BasicTweenSemaphore();
-			_onUpdate	 =	new BasicTweenSemaphore();
-			_onComplete	 =	new BasicTweenSemaphore();
+			_onStart = new BasicTweenSemaphore();
+			_onUpdate = new BasicTweenSemaphore();
+			_onComplete = new BasicTweenSemaphore();
 
 			// Check parameters
 			if($vars) {
 				// time
-				_pv = $time;
 				if( $time is Number && !isNaN( $time )) time = $time;
 				
 				// delay
@@ -147,9 +146,9 @@ package ca.joelray.transitions {
 				if( $vars[ "onComplete" ]) _onComplete.add( $vars[ "onComplete" ]);
 			}
 
-			_useFrames	=	false;
-			_paused		=	false;
-			_started	=	false;
+			_useFrames = false;
+			_paused = false;
+			_started = false;
 		};
 
 		
