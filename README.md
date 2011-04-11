@@ -1,13 +1,13 @@
 ### Change Log ###
 
-2011-03-28 - **r4**
+2011-04-10 - **r4**
 
 * Added some internal comments.
 * Deleted unused variables.
 * Quick code clean-up.
 
 
-2011-03-28 - **r3**
+2011-04-10 - **r3**
 
 * Added the ability to tween special properties such as blur, brightness, color, alpha/visibility (fade), frames, and volume.
 
