@@ -3,7 +3,7 @@ Basic Tween
 
 ### ActionScript 3 Tween Engine ###
 
-Created by [Joel Ray]("https://github.com/joelray").
+Created by [Joel Ray](https://github.com/joelray).
 
 
 ### Change Log ###
