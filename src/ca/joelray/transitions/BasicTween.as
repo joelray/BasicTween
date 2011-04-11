@@ -56,7 +56,11 @@ package ca.joelray.transitions {
 		private var _target                             : Object;                           // Display object being tweened
 		private var _properties                         : Vector.<BasicTweenProperties>;    // Property instance
 		private var _numProps                           : int;                              // Number of properties for a tween 
+		private var _tProperty                          : BasicTweenProperties;             // Property being checked
+		private var _pv                                 : Number;                           // Property value
 		
+		private var _t                                  : Number;                           // Current time (0-1)
+		private var _cTime                              : int;                              // Current engine time (in frames or seconds)
 		private var _timeStart                          : int;                              // Time when the tween will begin
 		private var _timeCreated                        : int;                              // Time when the tween was created
 		private var _timeComplete                       : int;                              // Time when the tween will end
@@ -71,12 +75,6 @@ package ca.joelray.transitions {
                                                 		
 		private var _paused                             : Boolean;                          // Pauses all tweens
 		private var _useFrames                          : Boolean;                          // Uses frames instead of milliseconds
-                                                		
-		// clean up instance names!             		
-		private var _t                                  : Number;                           // Current time (0-1)
-		private var _tProperty                          : BasicTweenProperties;             // Property being checked
-		private var _pv                                 : Number;                           // Property value
-		private var _cTime                              : int;                              // Current engine time (in frames or seconds)
 
 
 		// ===========================================================================================================================
