@@ -22,8 +22,8 @@
  * THE SOFTWARE.
  *
  **/
-package ca.joelray.transitions
-{
+package ca.joelray.transitions {
+	
 	import ca.joelray.transitions.easing.Linear;
 	
 	import flash.display.Sprite;
@@ -32,13 +32,12 @@ package ca.joelray.transitions
 
 	/**
 	* The <code>BasicTween</code> Class
-	*
 	* 
-	* @copyright 		2010 Joel Ray
-	* @author			Joel Ray
-	* @version			1.0 
-	* @langversion		ActionScript 3.0 			
-	* @playerversion 	Flash 10.0.0
+	* @copyright        2010 Joel Ray
+	* @author           Joel Ray
+	* @version          1.0 
+	* @langversion      ActionScript 3.0 			
+	* @playerversion    Flash 10.0.0
 	*/
 	public class BasicTween
 	{
@@ -50,54 +49,53 @@ package ca.joelray.transitions
 		1.0.0
 		*/
 		
-		public static var currentTime					: int;
-		public static var currentTimeFrame				: int;
+		public static var currentTime                   : int;                              // Current time in miliseconds 
+		public static var currentTimeFrame              : int;                              // Current time in frames
                                                 		
-		private static var __eventContainer				: Sprite;
-		private static var __tweens						: Vector.<BasicTween> = new Vector.<BasicTween>();
+		private static var __eventContainer             : Sprite;                           // Tween engine container
+		private static var __tweens                     : Vector.<BasicTween> = new Vector.<BasicTween>(); // List of tweens
 		
-		private static var _init						: Boolean;
-		private static var _keywords					: Array = ["ease", "delay", "onStart", "onUpdate", "onComplete"];
-		private static var _specialProperties			: Array = [];
-		private static var _specialPropertiesList		: Object;
+		private static var _init                        : Boolean;                          // Acknowledges the tween has initialized
+		private static var _keywords                    : Array = ["ease", "delay", "onStart", "onUpdate", "onComplete"]; // List of internal BasicTween properties - filtered out of "_properties" 
+		private static var _specialProperties           : Array = [];                       // List of registered special properties
+		private static var _specialPropertiesList       : Object;                           // List of special property instances
 
-		private var _target								: Object;
-		private var _properties							: Vector.<BasicTweenProperties>;
-		private var _numProps							: int;
+		private var _target                             : Object;                           // Display object being tweened
+		private var _properties                         : Vector.<BasicTweenProperties>;    // Property instance
+		private var _numProps                           : int;                              // Number of properties for a tween 
+		
+		private var _timeStart                          : int;                              // Time when the tween will begin
+		private var _timeCreated                        : int;                              // Time when the tween was created
+		private var _timeComplete                       : int;                              // Time when the tween will end
+		private var _timeDuration                       : int;                              // Duration of the tween
+		private var _timePaused                         : int;                              // Duration of how long the tween has been paused
+		private var _started                            : Boolean;                          // Acknowledges the tween has begun
+		private var _ease                               : Function = Linear.easeNone;       // Tween ease - defaults to Linear.none
                                                 		
-		private var _timeStart							: int;
-		private var _timeCreated						: int;
-		private var _timeComplete						: int;
-		private var _timeDuration						: int;
-		private var _timePaused							: int;
-		private var _started							: Boolean;
-		private var _ease								: Function = Linear.easeNone;
+		private var _onStart                            : BasicTweenSemaphore;              // Signal dispatched when a tween has started
+		private var _onUpdate                           : BasicTweenSemaphore;              // Signal dispatched when a tween has updated
+		private var _onComplete                         : BasicTweenSemaphore;              // Signal dispatched when a tween has completed  
                                                 		
-		private var _onStart							: BasicTweenSemaphore;
-		private var _onUpdate							: BasicTweenSemaphore;
-		private var _onComplete							: BasicTweenSemaphore;
-                                                		
-		private var _paused								: Boolean;
-		private var _useFrames							: Boolean;
+		private var _paused                             : Boolean;                          // Pauses all tweens
+		private var _useFrames                          : Boolean;                          // Uses frames instead of milliseconds
                                                 		
 		// clean up instance names!             		
-		private var _t									: Number;                           // Current time (0-1)
-		private var _tProperty							: BasicTweenProperties;             // Property being checked
-		private var _tSProperty							: BasicTweenProperties;             // Special property being checked
-		private var _pv									: Number;                           // Property value
-		private var _cTime								: int;                              // Current engine time (in frames or seconds)
+		private var _t                                  : Number;                           // Current time (0-1)
+		private var _tProperty                          : BasicTweenProperties;             // Property being checked
+		private var _pv                                 : Number;                           // Property value
+		private var _cTime                              : int;                              // Current engine time (in frames or seconds)
 
 
 		// ===========================================================================================================================
 		// CONSTRUCTOR ---------------------------------------------------------------------------------------------------------------
 
 		/**
-	     * 	The <code>BasicTween()</code> method creates a new tween.
-	     *
-	     *  @param 		$target		Object		DisplayObject to be tweened.
-		 *  @param		$time		Number		Length of tween time.
-	     *  @param 		$vars 		Object		Paramters(x, y, delay, ease, etc.)
-	     */
+		 *  The <code>BasicTween()</code> method creates a new tween.
+		 *
+		 *  @param     $target      Object      DisplayObject to be tweened.
+		 *  @param     $time        Number      Length of tween time.
+		 *  @param     $vars        Object      Paramters(x, y, delay, ease, etc.)
+		 */
 		public function BasicTween( $target:Object, $time:Number, $vars:Object = null ) {
 			// Start the engine
 			if(!_init) _initialize();
@@ -109,7 +107,7 @@ package ca.joelray.transitions
 			for( i in $vars ) {
 				b = false; issp = false;
 				
-				for each(k in _keywords) { if(i == k) { b = true; break; }} // Is this a common property?
+				for each(k in _keywords) { if(i == k) { b = true; break; }} // Is this a internal BasicTween property?
 				for each(sp in _specialProperties) { if(i == sp) { issp = true; break; }} // Is this a special property?
 
 				if(!Boolean(b)) {
@@ -152,20 +150,19 @@ package ca.joelray.transitions
 			_useFrames	=	false;
 			_paused		=	false;
 			_started	=	false;
-		}
+		};
 
 		
 		// ===========================================================================================================================
 		// PUBLIC interface ----------------------------------------------------------------------------------------------------------
 		
 		/**
-	     * 	The <code>update()</code>
-	     *
-	     *  @param 		$currentTime		int		Current time of a tween
-	     *  @param 		$currentTimeFrame 	int		Current time of a tween in frames
-	     */
-		public function update( $currentTime:int, $currentTimeFrame:int ):Boolean
-		{	
+		 *  The <code>update()</code>
+		 *
+		 *  @param      $currentTime        int     Current time of a tween
+		 *  @param      $currentTimeFrame   int     Current time of a tween in frames
+		 */
+		public function update( $currentTime:int, $currentTimeFrame:int ):Boolean {	
 			if( _paused ) return true;
 			
 			_cTime = _useFrames ? $currentTimeFrame : $currentTime;
@@ -174,14 +171,11 @@ package ca.joelray.transitions
 				if( !_started ) {
 					_onStart.dispatch();
 					
-					for( var i:int=0; i<_properties.length; i++ ) {
+					for( var i:int=0; i<_properties.length; ++i ) {
 						_tProperty = BasicTweenProperties( _properties[ i ]);
 						
-						if(_tProperty.isSpecialProperty) {
-							_specialPropertiesList[_tProperty.id].init(_target, _tProperty.valueComplete);
-						}
-						
-						else _pv = _target[ _tProperty.id ]; // Directly read property
+						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].init(_target, _tProperty.valueComplete);
+						else _pv = _target[ _tProperty.id ];
 
 						_tProperty.valueStart = isNaN( _pv ) ? _tProperty.valueComplete : _pv;
 						_tProperty.valueChange = _tProperty.valueComplete - _tProperty.valueStart;
@@ -192,7 +186,7 @@ package ca.joelray.transitions
 				
 				if( _cTime >= _timeComplete ) {
 					// Tweening time has completed, set to final value
-					for( var ii:int=0; ii<_properties.length; ii++ ) {
+					for( var ii:int=0; ii<_properties.length; ++ii ) {
 						_tProperty = BasicTweenProperties( _properties[ ii ]);
 						
 						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].update(1);
@@ -207,19 +201,11 @@ package ca.joelray.transitions
 				else {
 					// Tweening must continue
 					_t = _ease(( _cTime - _timeStart ), 0, 1, _timeDuration );
-					for( var iii:int=0; iii<_numProps; iii++ ) {
+					for( var iii:int=0; iii<_numProps; ++iii ) {
 						_tProperty = BasicTweenProperties( _properties[ iii ]);
 						
-						// jr: Need to determine what the initial value is with a special prop
-						var c:Number;
-						if(_tProperty.isSpecialProperty) {
-							_specialPropertiesList[_tProperty.id].update(_t);
-						}
-						
-						else {
-							c = _tProperty.valueStart + _t * _tProperty.valueChange;
-							_target[ _tProperty.id ] = c;
-						}
+						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].update(_t);
+						else _target[ _tProperty.id ] = _tProperty.valueStart + _t * _tProperty.valueChange;
 					}
 
 					_onUpdate.dispatch();
@@ -227,67 +213,62 @@ package ca.joelray.transitions
 			}
 
 			return true;
-		}
+		};
 
 		/**
-	     * 	The <code>pause()</code> method pauses an active tween.
-	     */
-		public function pause():void
-		{
-			if( !_paused )
-			{
+		 *  The <code>pause()</code> method pauses an active tween.
+		 */
+		public function pause():void {
+			if( !_paused ) {
 				_paused = true;
 				_timePaused = _useFrames ? BasicTween.currentTimeFrame : BasicTween.currentTime; 
 			}
-		}
+		};
 
 		/**
-	     * 	The <code>resume()</code> method resumes a paused tween.
-	     */
-		public function resume():void
-		{
-			if( _paused )
-			{
+		 * The <code>resume()</code> method resumes a paused tween.
+		 */
+		public function resume():void {
+			if( _paused ) {
 				_paused = false;
+				
 				var timeNow:Number = _useFrames ? BasicTween.currentTimeFrame : BasicTween.currentTime;
 				_timeStart += timeNow - _timePaused;
 				_timeComplete += timeNow - _timePaused;
 			}
-		}
+		};
 
 
 		// ===========================================================================================================================
 		// PUBLIC STATIC interface ---------------------------------------------------------------------------------------------------
 
 		/**
-	     * 	The <code>to()</code> method creates a new tween and starts it immediately.
-	     *
-	     *  @param 		$target		Object		DisplayObject to be tweened.
-		 *  @param		$time		Number		Length of tween time.
-	     *  @param 		$vars 		Object		Paramters(x, y, delay, ease, etc.)
-	     */
-		public static function to( $target:Object, $time:Number, $vars:Object = null ):BasicTween
-		{
+		 *  The <code>to()</code> method creates a new tween and starts it immediately.
+		 *
+		 *  @param      $targe      Object      DisplayObject to be tweened.
+		 *  @param      $time       Number      Length of tween time.
+		 *  @param      $vars       Object      Paramters(x, y, delay, ease, etc.)
+		 */
+		public static function to( $target:Object, $time:Number, $vars:Object = null ):BasicTween {
 			var t:BasicTween = new BasicTween( $target, $time, $vars );
 			__tweens.push( t );
 			return t;
-		}
+		};
 
 		/**
-	     * 	The <code>remove()</code> method removes a tween from an object and the tweening list.
-	     *
-	     *  @param 		$target		Object		DisplayObject to be removed.
-	     *  @param 		...$vars 	Arguments	
-	     */
-		public static function remove( $target:Object, ...$vars ):Boolean
-		{
+		 *  The <code>remove()</code> method removes a tween from an object and the tweening list.
+		 *
+		 *  @param      $target	    Object      DisplayObject to be removed.
+		 *  @param      ...$vars    Arguments	
+		 */
+		public static function remove( $target:Object, ...$vars ):Boolean {
 			var tl:Vector.<BasicTween> = new Vector.<BasicTween>();
 			var l:int = __tweens.length;
 
-			for( var i:int=0; i<l; i++ ) {
+			for( var i:int=0; i<l; ++i ) {
 				if( Boolean( __tweens[ i ]) && __tweens[ i ]._target == $target) {
 					if( $vars.length > 0 ) {
-						for( var ii:int=0; ii<__tweens[ ii ]._properties.length; ii++ ) {
+						for( var ii:int=0; ii<__tweens[ ii ]._properties.length; ++ii ) {
 							if( $vars.indexOf( __tweens[ i ]._properties[ ii ].id ) > -1 ) {
 								__tweens[ i ]._properties.splice( ii, 1 );
 								ii--;
@@ -303,31 +284,30 @@ package ca.joelray.transitions
 			var removedAny:Boolean;
 			l = tl.length;
 
-			for( var iii:int=0; iii<l; iii++ ) {
+			for( var iii:int=0; iii<l; ++iii ) {
 				ii = __tweens.indexOf( tl[iii ]);
 				removeTweenByIndex( ii );
 				removedAny = true;
 			}
 
 			return removedAny;
-		}
+		};
 
 		/**
-	     * 	The <code>getTweens()</code> method returns a requested tween.
-	     *
-	     *  @param 		$target		Object		Requested DisplayObject.
-	     *  @param 		...$vars 	Arguments	
-	     */
-		public static function getTweens( $target:Object, ...$vars ):Vector.<BasicTween>
-		{
+		 *  The <code>getTweens()</code> method returns a requested tween.
+		 *
+		 *  @param      $target     Object      Requested DisplayObject.
+		 *  @param      ...$vars    Arguments	
+		 */
+		public static function getTweens( $target:Object, ...$vars ):Vector.<BasicTween> {
 			var tl:Vector.<BasicTween> = new Vector.<BasicTween>();
 			var l:int = __tweens.length;
 			var exists:Boolean = false;
 
-			for( var i:int=0; i<l; i++ ) {
+			for( var i:int=0; i<l; ++i ) {
 				if( Boolean( __tweens[ i ]) && __tweens[ i ]._target == $target ) {
 					if( $vars.length > 0 ) {
-						for( var ii:int=0; ii<__tweens[ i ]._properties.length; ii++ ) {
+						for( var ii:int=0; ii<__tweens[ i ]._properties.length; ++ii ) {
 							if( $vars.indexOf( __tweens[ i ]._properties[ ii ].id ) > -1 ) {
 								exists = true;
 								break;
@@ -341,21 +321,19 @@ package ca.joelray.transitions
 			}
 
 			return tl;
-		}
+		};
 
 		/**
-	     * 	The <code>pause()</code> method pauses a tween.
-	     *
-	     *  @param 		$target		Object		DisplayObject to be paused.
-	     *  @param 		...$vars 	Arguments	
-	     */
-		public static function pause( $target:Object, ...$vars ):Boolean
-		{
-			// TODO: .apply() is naughty
+		 *  The <code>pause()</code> method pauses a tween.
+		 *
+		 *  @param      $target      Object      DisplayObject to be paused.
+		 *  @param      ...$vars     Arguments	
+		 */
+		public static function pause( $target:Object, ...$vars ):Boolean {
 			var pausedAny:Boolean = false;
 			var ftweens:Vector.<BasicTween> = getTweens.apply( null, [ $target ].concat( $vars ));
 
-			for( var i:int=0; i<ftweens.length; i++ ) {
+			for( var i:int=0; i<ftweens.length; ++i ) {
 				if( !ftweens[ i ].paused ) {
 					ftweens[ i ].pause();
 					pausedAny = true;
@@ -363,20 +341,19 @@ package ca.joelray.transitions
 			}
 
 			return pausedAny;
-		}
+		};
 
 		/**
-	     * 	The <code>resume()</code> method resumes a tween.
-	     *
-	     *  @param 		$target		Object		DisplayObject to be resumed.
-	     *  @param 		...$vars 	Arguments	
-	     */
-		public static function resume( $target:Object, ...$vars ):Boolean
-		{
+		 * The <code>resume()</code> method resumes a tween.
+		 *
+		 *  @param      $target     Object      DisplayObject to be resumed.
+		 *  @param      ...$vars    Arguments
+		 */
+		public static function resume( $target:Object, ...$vars ):Boolean {
 			var resumedAny:Boolean = false;
 			var ftweens:Vector.<BasicTween> = getTweens.apply(null, [$target].concat($vars));
 
-			for( var i:int=0; i<ftweens.length; i++ ) {
+			for( var i:int=0; i<ftweens.length; ++i ) {
 				if( ftweens[ i ].paused ) {
 					ftweens[ i ].resume();
 					resumedAny = true;
@@ -384,24 +361,23 @@ package ca.joelray.transitions
 			}
 
 			return resumedAny;
-		}
+		};
 
 		/**
-	     * 	The <code>removeTweenByIndex()</code> method removes a specific tween from the tweening list.
-	     *
-	     *  @param 		$i		Number		Index of the tween to be removed on the tweening list.	
-	     */
-		public static function removeTweenByIndex( $i:Number ):void
-		{
+		 * The <code>removeTweenByIndex()</code> method removes a specific tween from the tweening list.
+		 *
+		 *  @param      $i     Number     Index of the tween to be removed on the tweening list.	
+		 */
+		public static function removeTweenByIndex( $i:Number ):void {
 			__tweens[ $i ] = null;
-		}
+		};
 		
 		/**
 		 * The <code>registerSpecialProperty()</code> method adds a new special property to the available special property list.
 		 *
-		 * @param		$id				Name of the "special" property.
-		 * @param		$get			Function that gets the value.
-		 * @param		$set			Function that sets the value.
+		 * @param        $id             Name of the "special" property.
+		 * @param        $get            Function that gets the value.
+		 * @param        $set            Function that sets the value.
 		 */
 		public static function registerSpecialProperty($id:String, $class:Class):void {
 			if(!_init) _initialize();
@@ -413,8 +389,10 @@ package ca.joelray.transitions
 		// ===========================================================================================================================
 		// INTERNAL interface --------------------------------------------------------------------------------------------------------
 
-		private static function _initialize():void
-		{
+		/**
+		 * Starts the engine. 
+		 */		
+		private static function _initialize():void {
 			__eventContainer = new Sprite();
 			__eventContainer.addEventListener( Event.ENTER_FRAME, _frameTick );
 			
@@ -424,21 +402,19 @@ package ca.joelray.transitions
 			currentTime = getTimer();
 			
 			_init = true;
-		}
+		};
 
 
-		private function _updateCache():void
-		{
+		private function _updateCache():void {
 			_timeDuration = _timeComplete - _timeStart;
 		}
 
 		/**
 		* Updates all existing tweens.
 		*/
-		private static function _updateTweens():void
-		{
+		private static function _updateTweens():void {
 			var l:int = __tweens.length;
-			for( var i:int=0; i<l; i++ ) { // ++i had no impact, must test more
+			for( var i:int=0; i<l; ++i ) {
 				if( !Boolean( __tweens[ i ]) || !BasicTween( __tweens[ i ]).update( currentTime, currentTimeFrame )) {
 					__tweens.splice( i, 1 );
 					i--;
@@ -452,7 +428,7 @@ package ca.joelray.transitions
 		// EVENT interface -----------------------------------------------------------------------------------------------------------
 
 		/**
-		* Core engine. Without it, this class is useless.
+		* Core engine.
 		*/
 		private static function _frameTick( $evt:Event ):void
 		{

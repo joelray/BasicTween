@@ -1,5 +1,12 @@
 ### Change Log ###
 
+2011-03-28 - **r4**
+
+* Added some internal comments.
+* Deleted unused variables.
+* Quick code clean-up.
+
+
 2011-03-28 - **r3**
 
 * Added the ability to tween special properties such as blur, brightness, color, alpha/visibility (fade), frames, and volume.
@@ -18,4 +25,4 @@
 ### TODO ###
 
 * The source files still need a little tending to as their not the prettiest to look at.
-* Special properties should not be static instances. This is the _wrong_ approach.
+* BasicTween to reference all non-static methods from TweenObject rather than mixing method types in BasicTween.
