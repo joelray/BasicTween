@@ -1,5 +1,5 @@
 /**
- * BasicTweenSemaphore by Joel Ray. 2010
+ * BasicTweenSignal by Joel Ray. 2010
  *
  * Copyright (c) 2010 Joel Ray
  * 
@@ -22,30 +22,30 @@
  * THE SOFTWARE.
  *
  **/
-package ca.joelray.transitions
-{
+package ca.joelray.transitions {
+	
 	/**
-	 * The <code>BasicTweenSemaphore</code> Class
+	 * The <code>BasicTweenSignal</code> Class
 	 * 
 	 * @copyright 		2010 Joel Ray
 	 * @author			Joel Ray
 	 * @version			1.0 
 	 * @langversion		ActionScript 3.0 			
 	 * @playerversion 	Flash 10.0.0
-	 *
 	 */
-	public class BasicTweenSemaphore
-	{
-		protected var _functions	: Vector.<Function>;
-		private var _length			: int = 0;
+	public class BasicTweenSignal {
+		
+		private var _functions      : Vector.<Function>;
+		private var _length         : int = 0;
+		private var _i              : int;
 
 		
 		// ===========================================================================================================================
 		// CONSTRUCTOR ---------------------------------------------------------------------------------------------------------------
 		
-		public function BasicTweenSemaphore() {
+		public function BasicTweenSignal() {
 			_functions = new Vector.<Function>();
-		}
+		};
 
 
 		// ===========================================================================================================================
@@ -58,7 +58,7 @@ package ca.joelray.transitions
 				return true;
 			}
 			return false;
-		}
+		};
 
 		public function remove( $function:Function ):Boolean {
 			if( _functions.indexOf( $function ) == -1 ) {
@@ -67,10 +67,10 @@ package ca.joelray.transitions
 				return true;
 			}
 			return false;
-		}
+		};
 		
 		public function dispatch():void {
-			for( var i:int=0; i<_length; ++i ) { _functions[ i ](); }
-		}
-	}
-}
+			for( _i=0; _i<_length; ++_i ) { _functions[ _i ](); }
+		};
+	};
+};

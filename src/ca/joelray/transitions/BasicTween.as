@@ -69,9 +69,9 @@ package ca.joelray.transitions {
 		private var _started                            : Boolean;                          // Acknowledges the tween has begun
 		private var _ease                               : Function = Linear.easeNone;       // Tween ease - defaults to Linear.none
                                                 		
-		private var _onStart                            : BasicTweenSemaphore;              // Signal dispatched when a tween has started
-		private var _onUpdate                           : BasicTweenSemaphore;              // Signal dispatched when a tween has updated
-		private var _onComplete                         : BasicTweenSemaphore;              // Signal dispatched when a tween has completed  
+		private var _onStart                            : BasicTweenSignal;              // Signal dispatched when a tween has started
+		private var _onUpdate                           : BasicTweenSignal;              // Signal dispatched when a tween has updated
+		private var _onComplete                         : BasicTweenSignal;              // Signal dispatched when a tween has completed  
                                                 		
 		private var _paused                             : Boolean;                          // Pauses all tweens
 		private var _useFrames                          : Boolean;                          // Uses frames instead of milliseconds
@@ -117,9 +117,9 @@ package ca.joelray.transitions {
 			delay = 0;
 			
 			// Signals
-			_onStart = new BasicTweenSemaphore();
-			_onUpdate = new BasicTweenSemaphore();
-			_onComplete = new BasicTweenSemaphore();
+			_onStart = new BasicTweenSignal();
+			_onUpdate = new BasicTweenSignal();
+			_onComplete = new BasicTweenSignal();
 
 			// Check parameters
 			if($vars) {

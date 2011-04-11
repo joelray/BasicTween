@@ -22,8 +22,8 @@
  * THE SOFTWARE.
  *
  **/
-package ca.joelray.transitions
-{
+package ca.joelray.transitions {
+	
 	/**
 	 * The <code>BasicTweenProperties</code> Class
 	 * 
@@ -34,23 +34,23 @@ package ca.joelray.transitions
 	 * @playerversion 	Flash 10.0.0
 	 *
 	 */
-	public class BasicTweenProperties
-	{
-		public var id						: String;
-		public var isSpecialProperty		: Boolean;
-		public var valueStart				: *;		// Starting value of the tweening (NaN if not started yet)
-		public var valueComplete			: *;		// Final desired value
-		public var valueChange				: *;		// Change needed in value (cache)
+	public class BasicTweenProperties {
+		
+		public var id                       : String;
+		public var isSpecialProperty        : Boolean;
+		public var valueStart               : *;           // Starting value
+		public var valueComplete            : *;           // Final Value
+		public var valueChange              : *;           // Change needed in value (cache)
 		
 		
 		// ===========================================================================================================================
 		// CONSTRUCTOR ---------------------------------------------------------------------------------------------------------------
 		
 		public function BasicTweenProperties( $id:String, $valueComplete:*, $isSpecialProperty:Boolean = false ) {
-			id					= $id;
-			valueComplete		= $valueComplete;
-			isSpecialProperty	= $isSpecialProperty;
-		}
+			id = $id;
+			valueComplete = $valueComplete;
+			isSpecialProperty = $isSpecialProperty;
+		};
 		
-	}
-}
+	};
+};
