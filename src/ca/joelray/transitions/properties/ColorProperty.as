@@ -47,7 +47,7 @@ package ca.joelray.transitions.properties {
 		public function update($progress:Number):void {
 			
 			var ct:ColorTransform = (_target as DisplayObject).transform.colorTransform;
-			var arg:String
+			var arg:String;
 			for each(arg in _args) {
 				_progress = _colorStart[arg] + (_colorDiff[arg] * $progress);
 				ct[arg] = _progress;
