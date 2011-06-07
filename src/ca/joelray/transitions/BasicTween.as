@@ -49,14 +49,14 @@ package ca.joelray.transitions {
 		private static var __tweens                     : Vector.<BasicTween> = new Vector.<BasicTween>(); // List of tweens
 		
 		private static var _init                        : Boolean;                          // Acknowledges the tween has initialized
-		private static var _keywords                    : Array = ["ease", "delay", "onStart", "onUpdate", "onComplete"]; // List of internal BasicTween properties - filtered out of "_properties" 
+		private static var _keywords					: Vector.<String> = new <String>["ease", "delay", "onStart", "onUpdate", "onComplete"]; // List of internal BasicTween properties - filtered out of "_properties"
 		private static var _specialProperties           : Array = [];                       // List of registered special properties
 		private static var _specialPropertiesList       : Object;                           // List of special property instances
 
 		private var _target                             : Object;                           // Display object being tweened
-		private var _properties                         : Vector.<BasicTweenProperty>;      // Property instance
+		private var _properties                         : Vector.<BasicTweenProperties>;    // Property instance
 		private var _numProps                           : int;                              // Number of properties for a tween 
-		private var _tProperty                          : BasicTweenProperty;               // Property being checked
+		private var _tProperty                          : BasicTweenProperties;             // Property being checked
 		private var _pv                                 : Number;                           // Property value
 		
 		private var _t                                  : Number;                           // Current time (0-1)
@@ -92,19 +92,18 @@ package ca.joelray.transitions {
 			if(!_init) _initialize();
 			
 			_target = $target;
-			_properties = new Vector.<BasicTweenProperty>();
+			_properties = new Vector.<BasicTweenProperties>();
 			
 			var i:String, k:String, sp:String, b:Boolean, issp:Boolean;
 			for( i in $vars ) {
 				b = false; issp = false;
 				
-				for each(k in _keywords) { if(i == k) { b = true; break; }} // Is this a internal BasicTween property?
+				for each(k in _keywords) { if(k == i) { b = true; break; }} // Is this an internal BasicTween property? @see _keywords
 				for each(sp in _specialProperties) { if(i == sp) { issp = true; break; }} // Is this a special property?
 
 				if(!Boolean(b)) {
 					// If property is special, mark it as so. Otherwise, push it as normal. 
-					if(Boolean(issp)) _properties.push( new BasicTweenProperty( i, $vars[ i ], new _specialPropertiesList[i]() ));
-					else _properties.push( new BasicTweenProperty( i, $vars[ i ]));
+					_properties[_properties.length] = new BasicTweenProperties( i, $vars[ i ], Boolean(issp) ? true : false); // Faster than push()
 				}
 			}
 
@@ -157,13 +156,15 @@ package ca.joelray.transitions {
 			
 			_cTime = _useFrames ? $currentTimeFrame : $currentTime;
 			
+			var i:int;
 			if( _started || _cTime >= _timeStart ) {
 				if( !_started ) {
 					_onStart.dispatch();
 					
-					for( var i:int=0; i<_properties.length; ++i ) {
-						_tProperty = BasicTweenProperty( _properties[ i ]);
-						if(_tProperty.isSpecialProperty) _tProperty.specialProperty.init(_target, _tProperty.valueComplete);
+					for( i=0; i<_properties.length; ++i ) {
+						_tProperty = BasicTweenProperties( _properties[ i ]);
+						
+						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].init(_target, _tProperty.valueComplete);
 						else _pv = _target[ _tProperty.id ];
 
 						_tProperty.valueStart = isNaN( _pv ) ? _tProperty.valueComplete : _pv;
@@ -175,9 +176,10 @@ package ca.joelray.transitions {
 				
 				if( _cTime >= _timeComplete ) {
 					// Tweening time has completed, set to final value
-					for( var ii:int=0; ii<_properties.length; ++ii ) {
-						_tProperty = BasicTweenProperty( _properties[ ii ]);
-						if(_tProperty.isSpecialProperty) _tProperty.specialProperty.update(1);
+					for( i=0; i<_properties.length; ++i ) {
+						_tProperty = BasicTweenProperties( _properties[ i ]);
+						
+						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].update(1);
 						else _target[ _tProperty.id ] = _tProperty.valueComplete;
 					}
 
@@ -189,9 +191,10 @@ package ca.joelray.transitions {
 				else {
 					// Tweening must continue
 					_t = _ease(( _cTime - _timeStart ), 0, 1, _timeDuration );
-					for( var iii:int=0; iii<_numProps; ++iii ) {
-						_tProperty = BasicTweenProperty( _properties[ iii ]);
-						if(_tProperty.isSpecialProperty) _tProperty.specialProperty.update(_t);
+					for( i=0; i<_numProps; ++i ) {
+						_tProperty = BasicTweenProperties( _properties[ i ]);
+						
+						if(_tProperty.isSpecialProperty) _specialPropertiesList[_tProperty.id].update(_t);
 						else _target[ _tProperty.id ] = _tProperty.valueStart + _t * _tProperty.valueChange;
 					}
 
@@ -238,7 +241,7 @@ package ca.joelray.transitions {
 		 */
 		public static function to( $target:Object, $time:Number, $vars:Object = null ):BasicTween {
 			var t:BasicTween = new BasicTween( $target, $time, $vars );
-			__tweens.push( t );
+			__tweens[__tweens.length] = t; // Faster than push()
 			return t;
 		};
 
@@ -261,9 +264,9 @@ package ca.joelray.transitions {
 								ii--;
 							}
 						}
-						if( __tweens[ i ]._properties.length == 0 ) tl.push( __tweens[ i ]);
+						if( __tweens[ i ]._properties.length == 0 ) tl[tl.length] = __tweens[i];
 					} else {
-						tl.push( __tweens[ i ]);
+						tl[tl.length] = __tweens[i];
 					}
 				}
 			}
@@ -300,9 +303,9 @@ package ca.joelray.transitions {
 								break;
 							}
 						}
-						if( exists ) tl.push( __tweens[ i ]);
+						if( exists ) tl[tl.length] = __tweens[i];
 					} else {
-						tl.push( __tweens[ i ]);
+						tl[tl.length] = __tweens[i];
 					}
 				}
 			}
@@ -368,8 +371,10 @@ package ca.joelray.transitions {
 		 */
 		public static function registerSpecialProperty($id:String, $class:Class):void {
 			if(!_init) _initialize();
+			if(_specialPropertiesList[$id]) return;
+			
 			_specialPropertiesList[$id] = $class;
-			_specialProperties.push($id);
+			_specialProperties[_specialProperties.length] = $id; // Faster than push();
 		};
 
 
