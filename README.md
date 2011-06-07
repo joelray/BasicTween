@@ -8,6 +8,13 @@ Created by [Joel Ray](https://github.com/joelray).
 
 ### Change Log ###
 
+2011-06-07 - **r6**
+
+* Changed all push() calls to vector[vector.length] = value, for speed enhancements.
+* Internal property, **_keywords**, is now a String Vector.
+* Removed old properties class.
+* Optimizations ++.
+
 2011-04-11 - **r5**
 
 * Fixed a bug that wouldn't allow more than one instance of a special property.
